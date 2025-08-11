@@ -12,6 +12,11 @@ import cv2
 import numpy as np
 from PIL import Image
 
+# --- ★★★ पहला बदलाव: लोकल पाथ को हटा दें ★★★ ---
+# Render पर इनकी ज़रूरत नहीं है
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# poppler_path_for_code = r"C:\poppler-24.08.0\Library\bin"
+
 app = Flask(__name__)
 CORS(app)
 
@@ -75,7 +80,9 @@ def process_image_to_docx(image_path, output_path):
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    # --- ★★★ दूसरा बदलाव: Health Check के लिए ★★★ ---
+    # इसे send_from_directory से बदलकर एक सरल संदेश भेजें
+    return "PDF/Image Converter Backend is running!", 200
 
 @app.route('/convert', methods=['POST'])
 def convert_pdf_or_image_to_word():
@@ -106,6 +113,7 @@ def convert_pdf_or_image_to_word():
                 cv.close()
             else:
                 print("स्कैन PDF मिला। OCR का उपयोग...")
+                # --- ★★★ तीसरा बदलाव: poppler_path को हटा दें ★★★ ---
                 images = convert_from_path(input_path, dpi=300)
                 doc = Document()
                 for i, pil_image in enumerate(images):
@@ -163,5 +171,6 @@ def convert_pdf_or_image_to_word():
         print(f"Error: {e}")
         return jsonify({'error': 'कन्वर्ज़न में समस्या आई।'}), 500
 
+# --- Gunicorn इस हिस्से का उपयोग नहीं करता, लेकिन इसे रखने में कोई हर्ज नहीं ---
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
