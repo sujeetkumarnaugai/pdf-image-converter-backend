@@ -5,14 +5,11 @@ services:
     plan: free
     healthCheckPath: /
     
-    # --- ★★★ मेमोरी क्रैश को रोकने के लिए नया कोड ★★★ ---
-    # हम 1GB की एक स्वैप फाइल बनाएंगे
     preBuildCommand: "fallocate -l 1G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile"
     
     buildCommand: |
       apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-hin poppler-utils
       pip install -r requirements.txt
       
-    # --- ★★★ और बेहतर स्टार्ट कमांड ★★★ ---
-    # Gunicorn को और समय देंगे और रिसोर्स मैनेज करने के लिए कहेंगे
-    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 300
+    # --- ★★★ सबसे सरल स्टार्ट कमांड ★★★ ---
+    startCommand: gunicorn app:app
